@@ -426,7 +426,7 @@ if __name__  == '__main__':
         for k, v in state.items():
             if torch.is_tensor(v):
                 state[k] = v.to(device)
-    for epch in range(460):
+    for epch in range(200):
         model.train()
         allacc =[]
         f1mi =[]
