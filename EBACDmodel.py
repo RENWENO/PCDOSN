@@ -1,6 +1,5 @@
 #! -*- coding: utf-8 -*-
-# @Time    : 2024/7/5 23:44
-# @Author  : LiuGan
+
 """This model shows an example of using dgl.metapath_reachable_graph on the original heterogeneous
 graph.
 Because the original HAN implementation only gives the preprocessed homogeneous graph, this model
