@@ -1,6 +1,5 @@
 #! -*- coding: utf-8 -*-
-# @Time    : 2024/6/4 23:57
-# @Author  : LiuGan
+
 
 import re
 import pickle
