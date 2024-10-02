@@ -1,6 +1,5 @@
 #! -*- coding: utf-8 -*-
-# @Time    : 2024/9/22 20:00
-# @Author  : LiuGan
+
 
 def DataStriping(u2u1,ufu1,uau1,hyper,u2feat,lable,rate):
     train=[]
