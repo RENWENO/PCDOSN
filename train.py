@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader, Dataset
 #from HAN.newmodel import HAN
 from BAKEHANmodel import HAN
 from HAN.utils import load_data, EarlyStopping
-#读取用户到用户邻接矩阵A50000 ssh -p 24351 root@i-2.gpushare.com
+
 import torch
 from sklearn.metrics import f1_score
 from DataShart import DataStriping
@@ -68,7 +68,7 @@ def Cat(feart):
     sencefeat = last_hidden_states[:, 0, :]
     return sencefeat
 
-#利用BERT模型进行特征提取
+#BERT model was used for feature extraction
 def BERTTOKEN(feat):
     tokenizer = BertTokenizer.from_pretrained('../BERT')
 
@@ -79,8 +79,8 @@ def BERTTOKEN(feat):
     for sence in feat:
         encoded_input = tokenizer.encode_plus(
             sence,
-            padding='max_length',  # 使用最大长度作为填充策略
-            max_length=20,  # 使用有效的填充策略
+            padding='max_length',  
+            max_length=20,  
             truncation=True,
             return_tensors='pt'
         )
@@ -111,7 +111,7 @@ def BERTTOKEN(feat):
 
 
 
-#构建异质图结构
+#Construct heterogeneous graph structure
 def hereroList(use2use,usefeatuse):
     allhetero = {}
     for key in use2use:
@@ -128,15 +128,15 @@ def hereroList(use2use,usefeatuse):
     #print(allhetero)
     return  allhetero
 
-#构建特征
+#feature design
 def Featlist(useoffeat):
     """
 
-    :param useoffeat: 用户朋友圈用户属性
-    :return: Usefriendfeat用户好友特征,allnumfeat好友属性特征
+    :param useoffeat: User friend group User attributes
+    :return: Usefriendfeat,allnumfeat
     """
-    Usefriendfeat = {}#构建所有的用户朋友特征矩阵
-    allnumfeat={}#构建所有的用户朋友属性特征矩阵
+    Usefriendfeat = {}
+    allnumfeat={}
 
     for key in useoffeat:
         friendfeat = useoffeat[key]
@@ -157,11 +157,12 @@ def Featlist(useoffeat):
 def Datahecheng(use2use,usefeatuse,useaause,hyperedge,useoffeat,lable):
     """
 
-    :param use2use: 元路径1
-    :param usefeatuse: 元路径2
-    :param useoffeat: 用户朋友圈用户个人信息
-    :param lable: 属性标签
-    :return: 合成数据
+    :param use2use: Metapath 1
+    :param usefeatuse: Metapath 2
+    .......
+    :param useoffeat: User friend circle user personal information
+    :param lable: attribute tag
+    :return: generated data
     """
 
     Usefriendfeat = Featlist(useoffeat)  #
@@ -201,14 +202,12 @@ class MyGraphDataset(Dataset):
         #g = g1[576:,576:]
         g = g1
         # Z1 = torch.diag(g1.sum(1))
-        # # 计算归一化矩阵
         # D_inv_sqrt = torch.exp(-0.5 * torch.log(Z1 + 1e-5))
         # A_sym_normalized1 = torch.matmul(D_inv_sqrt, g1)
         # A_sym_normalized2 = torch.matmul(A_sym_normalized1, D_inv_sqrt)
         return g
 
     def __getitem__(self, idx):
-        # 返回第idx个图及其特征和标签
         D = self.data[idx]
         g1 = D[0]
         g1A = self.sym_norma(g1)
@@ -218,8 +217,8 @@ class MyGraphDataset(Dataset):
         g3A = self.sym_norma(g3)
         g4 = D[3]
         g4A = g4
-        features = D[4]  # 节点特征
-        labels =  D[5] # 节点标签
+        features = D[4]  
+        labels =  D[5]
         return g1A,g2A,g3A,g4A,features,labels
 
 # def BEACH(graph1,graph2):
@@ -292,7 +291,7 @@ def BEACH(graph1,graph2,graph3,graph4):
     BBhg = dgl.batch(dantu)
     return BBhg
 
-# 定义collate_fn函数，用于将一个批次的图组合在一起
+# Defines the collate_fn function to group a batch of graphs together
 def collate_fn(batch):
     graph1,graph2,graph3,graph4,faeture,lable = map(list, zip(*batch))
     #graph,faeture,lable = GuiYi(graphs, features, labels)
@@ -340,8 +339,6 @@ def score(logits, labels): #  micro_f1 和 macro_f1
     f1= fz / fm
     return f1, f1, f1
 
-
-# 评估
 def evaluate(model, g, features, labels, mask, loss_func):
     model.eval()
     with torch.no_grad():
@@ -376,22 +373,22 @@ if __name__  == '__main__':
     print(torch.cuda.is_available())
     #device =  torch.device('cuda0')
     #print(device)
-    # 读取用户朋友关系
+    # Read the user's friends
     with open("../data/Facebook/u2u1.pkl", 'rb') as f1:
         use2use = pickle.load(f1)
         #use2use = {key: use2use[key] for key in selected_keys if key in use2use}
 
-    # 读取用户特征用户邻接矩阵
+    # Read user characteristics User adjacency matrix
     with open("../data/Facebook/ufu1.pkl", 'rb') as f2:
         usefeatuse = pickle.load(f2)
         #usefeatuse = {key: usefeatuse[key] for key in selected_keys if key in usefeatuse}
-    # 读取间接用户路径
+    # Read the indirect user path
     with open("../data/Facebook/uaau1.pkl", 'rb') as f3:
         useaause = pickle.load(f3)
-    # 读取间接用户路径
+    
     with open("../data/Facebook/hyperedge.pkl", 'rb') as f4:
         hyperedge = pickle.load(f4)
-    # 读取用户特征
+
     with open("u2feat.pkl", 'rb') as f5:
         useoffeat = pickle.load(f5)
         #useoffeat = {key: useoffeat[key] for key in selected_keys if key in useoffeat}
@@ -400,11 +397,11 @@ if __name__  == '__main__':
     with open('lable.pkl', 'rb') as f6:
         lable = pickle.load(f6)
         #lable = {key: lable[key] for key in selected_keys if key in lable}
-    # 读取行为属性节点特征
+  
     # with open("feat.pkl", "rb") as f7:
     #     feat = pickle.load(f7)
     #data = Datahecheng(use2use, usefeatuse, useoffeat, lable)
-    #print("输出时", data)
+  
     train,test = DataStriping(use2use,usefeatuse,useaause,hyperedge,useoffeat,lable,rate)
     trainData = Datahecheng(train[0],train[1],train[2],train[3],train[4],train[5])
     testData = Datahecheng(test[0], test[1], test[2], test[3], test[4], test[5])
